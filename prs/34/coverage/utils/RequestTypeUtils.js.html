@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/16</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>0/11</span>
             </div>
         
             
@@ -80,35 +80,65 @@
 <a name='L15'></a><a href='#L15'>15</a>
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
-<a name='L18'></a><a href='#L18'>18</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export function <span class="fstat-no" title="function not covered" >cellToAxiosParamsDelete(</span>cell) {
-<span class="cstat-no" title="statement not covered" >  if (</span>
-    !cell ||
-    !cell.row ||
-    !cell.row.values ||
-    typeof cell.row.values.id === "undefined"
-  ) {
-<span class="cstat-no" title="statement not covered" >    throw new Error("Invalid cell object for cellToAxiosParamsDelete");</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const API_REQUEST_TYPES_URL = <span class="cstat-no" title="statement not covered" >"/api/requesttypes";</span>
+export const HTTP_METHOD_DELETE = <span class="cstat-no" title="statement not covered" >"DELETE";</span>
+&nbsp;
+export function <span class="fstat-no" title="function not covered" >cellToAxiosParamsDelete(</span>cell) {
+  // Input validation: This is key for robustness and killing mutants
+<span class="cstat-no" title="statement not covered" >  if (!cell || typeof cell !== 'object') {</span>
+<span class="cstat-no" title="statement not covered" >    throw new TypeError("cellToAxiosParamsDelete: 'cell' must be an object.");</span>
   }
+<span class="cstat-no" title="statement not covered" >  if (!cell.row || typeof cell.row !== 'object') {</span>
+<span class="cstat-no" title="statement not covered" >    throw new TypeError("cellToAxiosParamsDelete: 'cell.row' must be an object.");</span>
+  }
+<span class="cstat-no" title="statement not covered" >  if (!cell.row.values || typeof cell.row.values !== 'object') {</span>
+<span class="cstat-no" title="statement not covered" >    throw new TypeError("cellToAxiosParamsDelete: 'cell.row.values' must be an object.");</span>
+  }
+  // Allow 0 as a valid ID, but not undefined or null
+<span class="cstat-no" title="statement not covered" >  if (cell.row.values.id === undefined || cell.row.values.id === null) {</span>
+<span class="cstat-no" title="statement not covered" >    throw new TypeError("cellToAxiosParamsDelete: 'cell.row.values.id' is missing or invalid.");</span>
+  }
+&nbsp;
 <span class="cstat-no" title="statement not covered" >  return {</span>
-    url: "/api/requesttypes",
-    method: "DELETE",
+    url: API_REQUEST_TYPES_URL,
+    method: HTTP_METHOD_DELETE,
     params: {
       id: cell.row.values.id,
     },
@@ -121,7 +151,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-14T21:44:36.974Z
+                at 2025-05-14T21:49:59.397Z
             </div>
         <script src="../prettify.js"></script>
         <script>
