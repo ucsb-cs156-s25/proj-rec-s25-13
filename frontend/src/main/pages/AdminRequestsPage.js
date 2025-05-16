@@ -1,6 +1,7 @@
 import BasicLayout from "main/layouts/BasicLayout/BasicLayout";
 import RecommendationRequestTable from "main/components/RecommendationRequest/RecommendationRequestTable";
 
+// import { useCurrentUser } from "main/utils/useCurrentUser";
 import { useBackend } from "main/utils/useBackend";
 const AdminRequestsPage = () => {
   const {
@@ -10,7 +11,7 @@ const AdminRequestsPage = () => {
   } = useBackend(
     // Stryker disable next-line all : don't test internal caching of React Query
     ["/api/admin/requests"],
-    { method: "GET", url: "/api/recommendationrequests/admin" },
+    { method: "GET", url: "/api/recommendationrequest/admin" },
     [],
   );
 
