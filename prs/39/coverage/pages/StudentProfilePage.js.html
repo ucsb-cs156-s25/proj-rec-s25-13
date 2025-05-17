@@ -135,7 +135,10 @@
 <a name='L70'></a><a href='#L70'>70</a>
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -165,12 +168,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -188,6 +193,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -215,78 +221,81 @@ import RecommendationRequestTable from "main/components/RecommendationRequest/Re
 import { useBackend } from "main/utils/useBackend";
 &nbsp;
 const StudentProfilePage = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-const { data: currentUser } = <span class="cstat-no" title="statement not covered" >useCurrentUser();</span>
-const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
+  const { data: currentUser } = <span class="cstat-no" title="statement not covered" >useCurrentUser();</span>
+  const navigate = <span class="cstat-no" title="statement not covered" >useNavigate();</span>
 &nbsp;
-// Fetch only the current user's recommendation requests
-const { data: requests } = <span class="cstat-no" title="statement not covered" >useBackend(</span>
+  // Fetch only the current user's recommendation requests
+  const { data: requests } = <span class="cstat-no" title="statement not covered" >useBackend(</span>
     ["/api/recommendationrequest/requester/all"],
     { method: "GET", url: "/api/recommendationrequest/requester/all" },
-    []
-);
+    [],
+  );
 &nbsp;
-<span class="cstat-no" title="statement not covered" >if (!currentUser.loggedIn) {</span>
+<span class="cstat-no" title="statement not covered" >  if (!currentUser.loggedIn) {</span>
 <span class="cstat-no" title="statement not covered" >    return &lt;p&gt;Not logged in.&lt;/p&gt;;</span>
-}
+  }
 &nbsp;
-const { email, pictureUrl, fullName } = <span class="cstat-no" title="statement not covered" >currentUser.root.user;</span>
+  const { email, pictureUrl, fullName } = <span class="cstat-no" title="statement not covered" >currentUser.root.user;</span>
 &nbsp;
-const handleEdit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>equest) =&gt; {</span>
+  const handleEdit = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(r</span>equest) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    navigate(`/requests/edit/${request.id}`);</span>
-};
+  };
 &nbsp;
-const handleDelete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (request) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    await fetch(`/api/recommendationrequest?id=${request.id}`, { method: "DELETE" });</span>
+  const handleDelete = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (request) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    await fetch(`/api/recommendationrequest?id=${request.id}`, {</span>
+      method: "DELETE",
+    });
 <span class="cstat-no" title="statement not covered" >    window.location.reload(); </span>// Simple way to refresh, can be improved with state
-};
+  };
 &nbsp;
-<span class="cstat-no" title="statement not covered" >return (</span>
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;BasicLayout&gt;
-    &lt;Row className="align-items-center profile-header mb-5 text-center text-md-left"&gt;
+      &lt;Row className="align-items-center profile-header mb-5 text-center text-md-left"&gt;
         &lt;Col md={2}&gt;
-        &lt;img
+          &lt;img
             src={pictureUrl}
             alt="Profile"
             className="rounded-circle img-fluid profile-picture mb-3 mb-md-0"
-        /&gt;
+          /&gt;
         &lt;/Col&gt;
         &lt;Col md&gt;
-        &lt;h2&gt;{fullName}&lt;/h2&gt;
-        &lt;p className="lead text-muted"&gt;{email}&lt;/p&gt;
+          &lt;h2&gt;{fullName}&lt;/h2&gt;
+          &lt;p className="lead text-muted"&gt;{email}&lt;/p&gt;
         &lt;/Col&gt;
-    &lt;/Row&gt;
-    &lt;Row className="mb-3"&gt;
+      &lt;/Row&gt;
+      &lt;Row className="mb-3"&gt;
         &lt;Col&gt;
-        &lt;Button
+          &lt;Button
             variant="primary"
             onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >navigate("/requests/create")}</span>
-        &gt;
+          &gt;
             Create New Request
-        &lt;/Button&gt;
+          &lt;/Button&gt;
         &lt;/Col&gt;
-    &lt;/Row&gt;
-    &lt;Row&gt;
+      &lt;/Row&gt;
+      &lt;Row&gt;
         &lt;Col&gt;
-        &lt;RecommendationRequestTable
+          &lt;RecommendationRequestTable
             requests={requests}
             currentUser={currentUser}
             onEdit={handleEdit}
             onDelete={handleDelete}
-        /&gt;
+          /&gt;
         &lt;/Col&gt;
-    &lt;/Row&gt;
+      &lt;/Row&gt;
     &lt;/BasicLayout&gt;
-);
+  );
 };
 &nbsp;
-export default StudentProfilePage;</pre></td></tr></table></pre>
+export default StudentProfilePage;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-15T22:55:35.639Z
+                at 2025-05-17T06:29:13.196Z
             </div>
         <script src="../prettify.js"></script>
         <script>
