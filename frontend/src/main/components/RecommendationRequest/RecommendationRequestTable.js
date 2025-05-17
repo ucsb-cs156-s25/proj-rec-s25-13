@@ -71,18 +71,39 @@ export default function RecommendationRequestTable({ requests, currentUser }) {
     {
       Header: "Submission Date",
       accessor: "submissionDate",
+      Cell: ({ value }) => {
+        const date = new Date(value);
+        const formattedDate = `${String(date.getMonth() + 1).padStart(2, "0")}:${String(date.getDate()).padStart(2, "0")}:${date.getFullYear()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`;
+        return formattedDate;
+      },
     },
     {
       Header: "Last Modified Date",
       accessor: "lastModifiedDate",
+      Cell: ({ value }) => {
+        const date = new Date(value);
+        const formattedDate = `${String(date.getMonth() + 1).padStart(2, "0")}:${String(date.getDate()).padStart(2, "0")}:${date.getFullYear()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`;
+        return formattedDate;
+      },
     },
     {
       Header: "Completion Date",
       accessor: "completionDate",
+      Cell: ({ value }) => {
+        if (!value) return ""; // Check if value exists
+        const date = new Date(value);
+        const formattedDate = `${String(date.getMonth() + 1).padStart(2, "0")}:${String(date.getDate()).padStart(2, "0")}:${date.getFullYear()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`;
+        return formattedDate;
+      },
     },
     {
       Header: "Due Date",
       accessor: "dueDate",
+      Cell: ({ value }) => {
+        const date = new Date(value);
+        const formattedDate = `${String(date.getMonth() + 1).padStart(2, "0")}:${String(date.getDate()).padStart(2, "0")}:${date.getFullYear()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`;
+        return formattedDate;
+      },
     },
   ];
 

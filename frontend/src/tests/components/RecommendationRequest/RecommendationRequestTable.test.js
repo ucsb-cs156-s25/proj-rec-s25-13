@@ -75,6 +75,26 @@ describe("UserTable tests", () => {
       expect(header).toBeInTheDocument();
     });
 
+    expect(
+      screen.getByTestId(`${testId}-cell-row-0-col-submissionDate`),
+    ).toHaveTextContent("01:02:2022 02:00");
+
+    expect(
+      screen.getByTestId(`${testId}-cell-row-1-col-lastModifiedDate`),
+    ).toHaveTextContent("02:02:2022 02:00");
+
+    expect(
+      screen.getByTestId(`${testId}-cell-row-0-col-completionDate`),
+    ).toHaveTextContent("06:02:2022 02:00");
+
+    expect(
+      screen.getByTestId(`${testId}-cell-row-1-col-completionDate`),
+    ).toHaveTextContent("");
+
+    expect(
+      screen.getByTestId(`${testId}-cell-row-0-col-dueDate`),
+    ).toHaveTextContent("09:02:2022 02:00");
+
     expect(screen.getByTestId(`${testId}-cell-row-0-col-id`)).toHaveTextContent(
       "2",
     );
