@@ -283,7 +283,12 @@
 <a name='L218'></a><a href='#L218'>218</a>
 <a name='L219'></a><a href='#L219'>219</a>
 <a name='L220'></a><a href='#L220'>220</a>
-<a name='L221'></a><a href='#L221'>221</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -300,16 +305,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
-<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
@@ -333,14 +339,18 @@
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -348,7 +358,7 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -385,7 +395,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -428,7 +438,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -529,29 +539,33 @@ function RecommendationRequestForm({
   );
 &nbsp;
   //queries endpoint to get list of professors
-  useEffect(() =&gt; {
-    const getProfessors = async () =&gt; {
-      try {
-        const response = await fetch("/api/admin/users/professors");
-        const data = await response.json();
-        setProfessors(data);
-      } catch (error) {
-        console.error("Error fetching professors");
-      }
-    };
-    const getRequestTypes = async () =&gt; {
-      try {
-        const response = await fetch("/api/requesttypes/all");
-        const data = await response.json();
-        setRecommendationTypes(data);
-      } catch (error) {
-        console.error("Error fetching request types");
-      }
-    };
+  useEffect(
+    () =&gt; {
+      const getProfessors = async () =&gt; {
+        try {
+          const response = await fetch("/api/admin/users/professors");
+          const data = await response.json();
+          setProfessors(data);
+        } catch (error) {
+          console.error("Error fetching professors");
+        }
+      };
+      const getRequestTypes = async () =&gt; {
+        try {
+          const response = await fetch("/api/requesttypes/all");
+          const data = await response.json();
+          setRecommendationTypes(data);
+        } catch (error) {
+          console.error("Error fetching request types");
+        }
+      };
 &nbsp;
-    getProfessors();
-    getRequestTypes();
-  }, []);
+      getProfessors();
+      getRequestTypes();
+    },
+    // Stryker disable next-line ArrayDeclaration
+    [],
+  );
 &nbsp;
   const navigate = useNavigate();
 &nbsp;
@@ -562,6 +576,7 @@ function RecommendationRequestForm({
 &nbsp;
   const onSubmit = (data) =&gt; {
     // If dueDate is present and only a date (YYYY-MM-DD), append T00:00:00
+    // Stryker disable next-line LogicalOperator,ConditionalExpression
     <span class="missing-if-branch" title="else path not taken" >E</span>if (data.dueDate &amp;&amp; /^\d{4}-\d{2}-\d{2}$/.test(data.dueDate)) {
       data.dueDate = data.dueDate + "T00:00:00";
     }
@@ -730,7 +745,7 @@ export default RecommendationRequestForm;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-17T06:29:13.196Z
+                at 2025-05-17T10:11:51.086Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
