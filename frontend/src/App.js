@@ -2,10 +2,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "main/pages/HomePage";
 import ProfilePage from "main/pages/ProfilePage";
 import AdminUsersPage from "main/pages/AdminUsersPage";
+import StudentProfilePage from "main/pages/StudentProfilePage";
 
 import PendingRequestsPage from "main/pages/Requests/PendingRequestsPage";
 import CompletedRequestsPage from "main/pages/Requests/CompletedRequestsPage";
 import StatisticsPage from "main/pages/Requests/StatisticsPage";
+import RecommendationRequestCreatePage from "main/pages/Requests/RecommendationRequestCreatePage";
+import RecommendationRequestEditPage from "main/pages/Requests/RecommendationRequestEditPage";
 
 import { hasRole, useCurrentUser } from "main/utils/currentUser";
 
@@ -19,7 +22,17 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<HomePage />} />
-        <Route exact path="/profile" element={<ProfilePage />} />
+        <Route
+          exact
+          path="/profile"
+          element={
+            hasRole(currentUser, "ROLE_STUDENT") ? (
+              <StudentProfilePage />
+            ) : (
+              <ProfilePage />
+            )
+          }
+        />
         {hasRole(currentUser, "ROLE_ADMIN") && (
           <Route exact path="/admin/users" element={<AdminUsersPage />} />
         )}
@@ -40,6 +53,16 @@ function App() {
               exact
               path="/requests/statistics"
               element={<StatisticsPage />}
+            />
+            <Route
+              exact
+              path="/requests/create"
+              element={<RecommendationRequestCreatePage />}
+            />
+            <Route
+              exact
+              path="/requests/edit/:id"
+              element={<RecommendationRequestEditPage />}
             />
           </>
         )}
