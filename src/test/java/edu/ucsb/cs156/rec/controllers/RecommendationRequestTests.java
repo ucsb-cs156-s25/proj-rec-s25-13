@@ -461,7 +461,7 @@ public class RecommendationRequestTests extends ControllerTestCase {
         }
 
         @Test
-        @WithMockUser(roles = { "STUDENT" })
+        @WithMockUser(roles = { "USER" })
         public void test_non_professor_get_recommendation_request_by_status_access_denied() throws Exception {
                 // Act & Assert
                 mockMvc.perform(get("/api/recommendationrequest/professor/filtered")
