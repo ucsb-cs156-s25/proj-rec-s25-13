@@ -25,8 +25,9 @@ const recommendationRequestFixtures = {
   threeRecommendations: [
     {
       id: 2,
-      professor_id: 2,
+      professor_id: 3,
       professor: {
+        id: 3,
         fullName: "Chaewon Bang",
         email: "chaewonbang@ucsb.edu",
       },
@@ -39,6 +40,7 @@ const recommendationRequestFixtures = {
       recommendationType: "CS Department BS/MS program",
       requester_id: 2,
       requester: {
+        id: 2,
         fullName: "Mia Scott",
         email: "mscott@ucsb.edu",
       },

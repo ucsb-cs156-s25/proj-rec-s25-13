@@ -6,11 +6,15 @@ import {
   cellToAxiosParamsDelete,
   onDeleteSuccess,
 } from "main/utils/RecommendationRequestUtils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { hasRole } from "main/utils/currentUser";
 
 export default function RecommendationRequestTable({ requests, currentUser }) {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isPendingPage = location.pathname.includes("pending");
+  const isCompletedPage = location.pathname.includes("completed");
 
   const editCallback = (cell) => {
     navigate(`/requests/edit/${cell.row.values.id}`);
@@ -24,14 +28,15 @@ export default function RecommendationRequestTable({ requests, currentUser }) {
   // Stryker disable all : hard to test for query caching
 
   // when delete success, invalidate the correct query key (depending on user role)
-  const apiEndpoint = hasRole(currentUser, "ROLE_PROFESSOR")
-    ? "/api/recommendationrequest/professor/all"
-    : "/api/recommendationrequest/requester/all";
+  const apiEndpoint =
+    isPendingPage || isCompletedPage
+      ? "/api/recommendationrequest/professor/all"
+      : "/api/recommendationrequest/requester/all";
 
   const deleteMutation = useBackendMutation(
-    cellToAxiosParamsDelete,
+    (cell) => cellToAxiosParamsDelete(cell, currentUser),
     { onSuccess: onDeleteSuccess },
-    [apiEndpoint],
+    apiEndpoint,
   );
   // Stryker restore all
 
