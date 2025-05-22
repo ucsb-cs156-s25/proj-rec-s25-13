@@ -44,12 +44,16 @@ public class HomePageWebIT {
     }
 
     @Test
-    public void home_page_shows_greeting() throws Exception {
+    public void home_page_shows_correct_content() throws Exception {
         String url = String.format("http://localhost:%d/", port);
         page.navigate(url);
 
-        assertThat(page.getByText("This is a webapp containing a bunch of different Spring Boot/React examples."))
+        // Check that the main description is visible
+        assertThat(page.getByText("RecManager is a platform that helps manage recommendation requests"))
+                .isVisible();
+                
+        // Before login, the page should show the login message
+        assertThat(page.getByText("Please log in to start viewing and managing recommendation requests"))
                 .isVisible();
     }
-
 }

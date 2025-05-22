@@ -4,6 +4,7 @@ import edu.ucsb.cs156.rec.entities.User;
 import edu.ucsb.cs156.rec.repositories.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -547,8 +549,9 @@ public class RecommendationRequestControllerTest extends ControllerTestCase {
         // Prof can edit a Recommendation Request
         @WithMockUser(roles = { "PROFESSOR" })
         @Test
-        public void prof_can_put_recommendation_request() throws Exception {
+        public void prof_can_put_complete_recommendation_request() throws Exception {
                 // arrange
+                LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
                 User student = User.builder().id(99).build();
                 User prof = User.builder()
                                 .id(22L)
@@ -581,7 +584,7 @@ public class RecommendationRequestControllerTest extends ControllerTestCase {
                                 .recommendationType("PhDprogram")
                                 .details("details")
                                 .status("COMPLETED")
-                                .completionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .completionDate(now)
                                 .dueDate(LocalDateTime.parse("2022-01-03T00:00:00"))
                                 .submissionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
                                 .lastModifiedDate(LocalDateTime.parse("2022-01-03T00:00:00"))
@@ -593,6 +596,86 @@ public class RecommendationRequestControllerTest extends ControllerTestCase {
                                 .recommendationType("PhDprogram")
                                 .details("details")
                                 .status("COMPLETED")
+                                .completionDate(now)
+                                .dueDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .submissionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .lastModifiedDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .build();
+
+
+                String requestBody = mapper.writeValueAsString(rec_updated);
+                String expectedJson = mapper.writeValueAsString(rec_corrected);
+
+                when(recommendationRequestRepository.findById(eq(67L))).thenReturn(Optional.of(rec));
+
+                // act
+                MvcResult response = mockMvc
+                                .perform(put("/api/recommendationrequest/professor?id=67")
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .characterEncoding("utf-8")
+                                                .content(requestBody)
+                                                .with(csrf()))
+                                .andExpect(status().isOk())
+                                .andReturn();
+
+                // assert
+
+                verify(recommendationRequestRepository, times(1)).findById(67L);
+                verify(recommendationRequestRepository, times(1)).save(rec_corrected);
+
+                String responseString = response.getResponse().getContentAsString();
+                assertEquals(expectedJson, responseString);
+        }
+
+        // Prof can edit a Recommendation Request
+        @WithMockUser(roles = { "PROFESSOR" })
+        @Test
+        public void prof_can_put_incomplete_recommendation_request() throws Exception {
+                // arrange
+                User student = User.builder().id(99).build();
+                User prof = User.builder()
+                                .id(22L)
+                                .email("profA@ucsb.edu")
+                                .googleSub("googleSub")
+                                .fullName("Prof A")
+                                .givenName("Prof")
+                                .familyName("A")
+                                .emailVerified(true)
+                                .professor(true)
+                                .build();
+
+                RecommendationRequest rec = RecommendationRequest.builder()
+                                .id(67L)
+                                .requester(student)
+                                .professor(prof)
+                                .recommendationType("PhDprogram")
+                                .details("details")
+                                .status("PENDING")
+                                .completionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .dueDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .submissionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .lastModifiedDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .build();
+
+                RecommendationRequest rec_updated = RecommendationRequest.builder()
+                                .id(67L)
+                                .requester(student)
+                                .professor(prof)
+                                .recommendationType("PhDprogram")
+                                .details("details")
+                                .status("STILL_PENDING")
+                                .completionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .dueDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .submissionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .lastModifiedDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .build();
+                RecommendationRequest rec_corrected = RecommendationRequest.builder()
+                                .id(67L)
+                                .requester(student)
+                                .professor(prof)
+                                .recommendationType("PhDprogram")
+                                .details("details")
+                                .status("STILL_PENDING")
                                 .completionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
                                 .dueDate(LocalDateTime.parse("2022-01-03T00:00:00"))
                                 .submissionDate(LocalDateTime.parse("2022-01-03T00:00:00"))

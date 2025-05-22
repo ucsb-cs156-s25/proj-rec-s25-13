@@ -8,6 +8,8 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.microsoft.playwright.Page;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 import edu.ucsb.cs156.rec.WebTestCase;
@@ -26,7 +28,7 @@ public class OauthWebIT extends WebTestCase {
 
         page.getByText("Log Out").click();
 
-        assertThat(page.getByText("Log In")).isVisible();
+        assertThat(page.getByText("Log In", new Page.GetByTextOptions().setExact(true))).isVisible();
         assertThat(page.getByText("Log Out")).not().isVisible();
     }
 }

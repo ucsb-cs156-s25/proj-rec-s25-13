@@ -24,29 +24,33 @@ function RecommendationRequestForm({
   );
 
   //queries endpoint to get list of professors
-  useEffect(() => {
-    const getProfessors = async () => {
-      try {
-        const response = await fetch("/api/admin/users/professors");
-        const data = await response.json();
-        setProfessors(data);
-      } catch (error) {
-        console.error("Error fetching professors");
-      }
-    };
-    const getRequestTypes = async () => {
-      try {
-        const response = await fetch("/api/requesttypes/all");
-        const data = await response.json();
-        setRecommendationTypes(data);
-      } catch (error) {
-        console.error("Error fetching request types");
-      }
-    };
+  useEffect(
+    () => {
+      const getProfessors = async () => {
+        try {
+          const response = await fetch("/api/admin/users/professors");
+          const data = await response.json();
+          setProfessors(data);
+        } catch (error) {
+          console.error("Error fetching professors");
+        }
+      };
+      const getRequestTypes = async () => {
+        try {
+          const response = await fetch("/api/requesttypes/all");
+          const data = await response.json();
+          setRecommendationTypes(data);
+        } catch (error) {
+          console.error("Error fetching request types");
+        }
+      };
 
-    getProfessors();
-    getRequestTypes();
-  });
+      getProfessors();
+      getRequestTypes();
+    },
+    // Stryker disable next-line ArrayDeclaration
+    [],
+  );
 
   const navigate = useNavigate();
 
@@ -55,8 +59,17 @@ function RecommendationRequestForm({
 
   // Stryker disable Regex
 
+  const onSubmit = (data) => {
+    // If dueDate is present and only a date (YYYY-MM-DD), append T00:00:00
+    // Stryker disable next-line LogicalOperator,ConditionalExpression
+    if (data.dueDate && /^\d{4}-\d{2}-\d{2}$/.test(data.dueDate)) {
+      data.dueDate = data.dueDate + "T00:00:00";
+    }
+    submitAction(data);
+  };
+
   return (
-    <Form onSubmit={handleSubmit(submitAction)}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <Row>
         {initialContents && (
           <Col>
@@ -167,6 +180,26 @@ function RecommendationRequestForm({
               isInvalid={Boolean(errors.details)}
               {...register("details")}
             />
+          </Form.Group>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col>
+          <Form.Group className="mb-3">
+            <Form.Label htmlFor="dueDate">Due Date</Form.Label>
+            <Form.Control
+              data-testid="RecommendationRequestForm-dueDate"
+              id="dueDate"
+              type="date"
+              isInvalid={Boolean(errors.dueDate)}
+              {...register("dueDate", { required: "Please select a due date" })}
+            />
+            {errors.dueDate && (
+              <Form.Control.Feedback type="invalid">
+                {errors.dueDate.message}
+              </Form.Control.Feedback>
+            )}
           </Form.Group>
         </Col>
       </Row>

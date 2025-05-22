@@ -6,6 +6,7 @@ import {
   cellToAxiosParamsDelete,
   onDeleteSuccess,
 } from "main/utils/RecommendationRequestUtils";
+
 import { useNavigate, useLocation } from "react-router-dom";
 import { hasRole } from "main/utils/currentUser";
 
@@ -38,6 +39,7 @@ export default function RecommendationRequestTable({ requests, currentUser }) {
     { onSuccess: onDeleteSuccess },
     apiEndpoint,
   );
+
   // Stryker restore all
 
   // Stryker disable next-line all : TODO try to make a good test for this
