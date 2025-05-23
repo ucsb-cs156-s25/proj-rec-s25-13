@@ -8,6 +8,7 @@ import { useBackendMutation } from "main/utils/useBackend";
 import {
   cellToAxiosParamsDelete,
   onDeleteSuccess,
+  formattedDate,
   cellToAxiosParamsUpdateStatus,
   onUpdateStatusSuccess,
 } from "main/utils/RecommendationRequestUtils";
@@ -26,11 +27,6 @@ export default function RecommendationRequestTable({ requests, currentUser }) {
     navigate(`/requests/edit/${cell.row.values.id}`);
   };
 
-  const formattedDate = (val) => {
-    const date = new Date(val);
-    const formattedDate = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${date.getFullYear()} ${String(date.getHours()).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`;
-    return formattedDate;
-  };
   // Stryker disable all : hard to test for query caching
 
   // when delete success, invalidate the correct query key (depending on user role)
