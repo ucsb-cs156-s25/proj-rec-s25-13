@@ -1,9 +1,14 @@
 import OurTable, { ButtonColumn } from "main/components/OurTable";
 import { useBackendMutation } from "main/utils/useBackend";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useMutation, useQueryClient } from "react-query";
 
 export default function UsersTable({ users }) {
   // Stryker disable all : hard to test for query caching
   // Stryker enable all
+
+  const queryClient = useQueryClient();
 
   //toggleAdmin
   function cellToAxiosParamsToggleAdmin(cell) {
@@ -16,13 +21,33 @@ export default function UsersTable({ users }) {
     };
   }
 
-  // Stryker disable all : hard to test for query caching
-  const toggleAdminMutation = useBackendMutation(
-    cellToAxiosParamsToggleAdmin,
-    {},
-    ["/api/admin/users"],
+  // Custom mutation that handles errors without the default Axios error
+  const toggleAdminMutation = useMutation(
+    async (cell) => {
+      try {
+        const params = cellToAxiosParamsToggleAdmin(cell);
+        const response = await axios(params);
+        return response.data;
+      } catch (error) {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          toast(`Error: ${error.response.data.message}`);
+        } else {
+          toast(`Error: ${error.message || "Unknown error occurred"}`);
+        }
+        throw error; // Re-throw to maintain error state in mutation
+      }
+    },
+    {
+      onSettled: () => {
+        queryClient.invalidateQueries(["/api/admin/users"]);
+      },
+      retry: false,
+    },
   );
-  // Stryker enable all
 
   // Stryker disable next-line all : TODO try to make a good test for this
   const toggleAdminCallback = async (cell) => {

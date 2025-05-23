@@ -2,6 +2,7 @@ import { fireEvent, render, waitFor, screen } from "@testing-library/react";
 import usersFixtures from "fixtures/usersFixtures";
 import UsersTable from "main/components/Users/UsersTable";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { MemoryRouter } from "react-router-dom";
 import axios from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
 
@@ -22,7 +23,9 @@ describe("UserTable tests", () => {
   test("renders without crashing for empty table", () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <UsersTable users={[]} />
+        <MemoryRouter>
+          <UsersTable users={[]} />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
   });
@@ -30,7 +33,9 @@ describe("UserTable tests", () => {
   test("renders without crashing for three users", () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <UsersTable users={usersFixtures.threeUsers} />
+        <MemoryRouter>
+          <UsersTable users={usersFixtures.threeUsers} />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
   });
@@ -38,7 +43,9 @@ describe("UserTable tests", () => {
   test("Has the expected colum headers and content", () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <UsersTable users={usersFixtures.threeUsers} />
+        <MemoryRouter>
+          <UsersTable users={usersFixtures.threeUsers} />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
 
@@ -110,10 +117,12 @@ describe("UserTable tests", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <UsersTable
-          users={usersFixtures.threeUsers}
-          currentUser={currentUser}
-        />
+        <MemoryRouter>
+          <UsersTable
+            users={usersFixtures.threeUsers}
+            currentUser={currentUser}
+          />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
 
@@ -146,10 +155,12 @@ describe("UserTable tests", () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <UsersTable
-          users={usersFixtures.threeUsers}
-          currentUser={currentUser}
-        />
+        <MemoryRouter>
+          <UsersTable
+            users={usersFixtures.threeUsers}
+            currentUser={currentUser}
+          />
+        </MemoryRouter>
       </QueryClientProvider>,
     );
 

@@ -110,6 +110,14 @@ public class UsersController extends ApiController {
         User user = userRepository.findById(id)
         .orElseThrow(() -> new EntityNotFoundException(User.class, id));
 
+        // Get the current user
+        User currentUser = getCurrentUser().getUser();
+        
+        // Check if the user is trying to remove admin from themselves
+        if (user.getId() == currentUser.getId() && user.getAdmin()) {
+            throw new IllegalArgumentException("Cannot remove admin from currently logged in user; ask another admin to do that.");
+        }
+
         user.setAdmin(!user.getAdmin());
         userRepository.save(user);
         return genericMessage("User with id %s has toggled admin status to %s".formatted(id, user.getAdmin()));
