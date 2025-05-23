@@ -8,19 +8,23 @@ const requestTypeFixtures = {
   fourTypes: [
     {
       id: 1,
-      requestType: "Recommendations",
+      requestType: "CS Department BS/MS program",
     },
     {
       id: 2,
-      requestType: "Requests",
+      requestType: "Scholarship or Fellowship",
     },
     {
       id: 3,
-      requestType: "Questions",
+      requestType: "MS program (other than CS Dept BS/MS)",
     },
     {
       id: 4,
-      requestType: "Meetings",
+      requestType: "PhD program",
+    },
+    {
+      id: 5,
+      requestType: "Other",
     },
   ],
 };

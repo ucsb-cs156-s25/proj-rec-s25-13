@@ -75,7 +75,7 @@ public class RequestTypeController extends ApiController {
      * @return the saved requesttype
      */
     @Operation(summary= "Create a new request type")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     @PostMapping("/post")
     public RequestType postRequestType(
             @Parameter(name="requestType") @RequestParam String requestType)
@@ -107,7 +107,7 @@ public class RequestTypeController extends ApiController {
      * @return a message indicating the date was deleted
      */
     @Operation(summary= "Delete a request type")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     @DeleteMapping("")
     public Object deleteRequestType(
             @Parameter(name="id") @RequestParam Long id) {
@@ -126,7 +126,7 @@ public class RequestTypeController extends ApiController {
      * @return the updated request type object
      */
     @Operation(summary= "Update a single request type")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     @PutMapping("")
     public RequestType updateRequestType(
             @Parameter(name="id") @RequestParam Long id,
@@ -141,6 +141,9 @@ public class RequestTypeController extends ApiController {
         for (RequestType existing : existingRequestTypes) {
             if (incoming.getRequestType().isEmpty()){
                 throw new IllegalArgumentException("Request type cannot be empty");
+            }
+            if(existing.getId() == id){
+                continue;
             }
             if (existing.getRequestType().equals(incoming.getRequestType())) {
                 throw new IllegalArgumentException("Duplicate request type: " + incoming);

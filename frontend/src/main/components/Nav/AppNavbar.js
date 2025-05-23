@@ -25,7 +25,7 @@ export default function AppNavbar({
       >
         <Container>
           <Navbar.Brand as={Link} to="/">
-            RecManager
+            Example
           </Navbar.Brand>
 
           <Navbar.Toggle />
@@ -63,6 +63,9 @@ export default function AppNavbar({
               )}
               {hasRole(currentUser, "ROLE_PROFESSOR") && (
                 <>
+                  <Nav.Link as={Link} to="/requesttypes/all">
+                    Request Types
+                  </Nav.Link>
                   <Nav.Link as={Link} to="/requests/pending">
                     Pending Requests
                   </Nav.Link>

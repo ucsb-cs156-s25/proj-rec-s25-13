@@ -17,16 +17,10 @@ export default function RequestTypeTable({ requestTypes, currentUser }) {
   };
 
   // Stryker disable all : hard to test for query caching
-
-  // when delete success, invalidate the correct query key (depending on user role)
-  const apiEndpoint = hasRole(currentUser, "ROLE_PROFESSOR")
-    ? "/api/admin/users/professor/all"
-    : "/api/admin/users/requester/all";
-
   const deleteMutation = useBackendMutation(
     cellToAxiosParamsDelete,
     { onSuccess: onDeleteSuccess },
-    [apiEndpoint],
+    ["/api/requesttypes/all"],
   );
   // Stryker restore all
 
