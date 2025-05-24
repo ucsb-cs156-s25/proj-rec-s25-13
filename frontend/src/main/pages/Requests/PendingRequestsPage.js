@@ -27,7 +27,8 @@ export default function PendingRequestsPage() {
   );
 
   const pendingRequests = requests.filter(
-    (request) => request.status === "PENDING",
+    (request) =>
+      request.status === "PENDING" || request.status === "IN PROGRESS",
   );
 
   return (

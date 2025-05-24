@@ -178,6 +178,27 @@ const recommendationRequestFixtures = {
       completionDate: null,
       done: false,
     },
+    {
+      id: 9,
+      requesterEmail: "student9@ucsb.edu",
+      professorEmail: "professor1@ucsb.edu",
+      requester: {
+        fullName: "Student Nine",
+        email: "student9@ucsb.edu",
+      },
+      professor: {
+        fullName: "Professor One",
+        email: "professor1@ucsb.edu",
+      },
+      details: "In progress request",
+      recommendationType: "Graduate School",
+      status: "IN PROGRESS",
+      submissionDate: "2024-02-01T00:00:00",
+      dueDate: "2024-03-01T00:00:00",
+      lastModifiedDate: "2024-02-15T00:00:00",
+      completionDate: null,
+      done: false,
+    },
   ],
 };
 

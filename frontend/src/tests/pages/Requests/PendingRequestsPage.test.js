@@ -64,6 +64,9 @@ describe("PendingRequestsPage tests", () => {
     expect(
       statusCells.some((cell) => cell.textContent === "PENDING"),
     ).toBeTruthy();
+    expect(
+      statusCells.some((cell) => cell.textContent === "IN PROGRESS"),
+    ).toBeTruthy();
   });
 
   test("Renders empty table when no pending requests", async () => {
@@ -143,6 +146,9 @@ describe("PendingRequestsPage tests", () => {
 
     expect(
       statusCells.some((cell) => cell.textContent === "PENDING"),
+    ).toBeTruthy();
+    expect(
+      statusCells.some((cell) => cell.textContent === "IN PROGRESS"),
     ).toBeTruthy();
   });
 

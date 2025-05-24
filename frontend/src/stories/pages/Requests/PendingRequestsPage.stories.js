@@ -29,6 +29,11 @@ Empty.parameters = {
 
 export const PendingRequests = Template.bind({});
 PendingRequests.parameters = {
+  reactRouter: {
+    location: {
+      pathname: "/requests/pending",
+    },
+  },
   msw: [
     http.get("/api/currentUser", () => {
       return HttpResponse.json(apiCurrentUserFixtures.professorUser);

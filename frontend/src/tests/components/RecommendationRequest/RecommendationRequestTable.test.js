@@ -2,11 +2,12 @@ import { fireEvent, render, waitFor, screen } from "@testing-library/react";
 import { recommendationRequestFixtures } from "fixtures/recommendationRequestFixtures";
 import RecommendationRequestTable from "main/components/RecommendationRequest/RecommendationRequestTable";
 import { QueryClient, QueryClientProvider } from "react-query";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { currentUserFixtures } from "fixtures/currentUserFixtures";
 import axios from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
 import { hasRole } from "main/utils/currentUser";
+import { toast } from "react-toastify";
 
 const mockedNavigate = jest.fn();
 const mockedLocation = { pathname: "" };
@@ -495,5 +496,375 @@ describe("UserTable tests", () => {
       "/api/recommendationrequest/professor",
     );
     expect(axiosMock.history.delete[0].params).toEqual({ id: 2 });
+  });
+});
+
+jest.mock("react-toastify", () => ({
+  toast: jest.fn(),
+}));
+
+describe("RecommendationRequestTable update mutation", () => {
+  const queryClient = new QueryClient();
+  let axiosMock = AxiosMockAdapter;
+
+  beforeEach(() => {
+    axiosMock = new AxiosMockAdapter(axios);
+    axiosMock
+      .onPut("/api/recommendationrequest/professor")
+      .reply(200, { message: "Recommendation Request updated" });
+  });
+
+  afterEach(() => {
+    axiosMock.restore();
+    jest.clearAllMocks();
+    queryClient.clear();
+  });
+
+  test("Clicking Accept sends PUT with IN PROGRESS and toasts success", async () => {
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    const updateButton = screen.getByTestId(
+      "RecommendationRequestTable-cell-row-2-col-Update-dropdown",
+    );
+    fireEvent.click(updateButton);
+    expect(updateButton).toHaveClass("btn-info");
+
+    fireEvent.click(await screen.findByText("Accept"));
+
+    await waitFor(() => expect(axiosMock.history.put.length).toBe(1));
+
+    expect(toast).toHaveBeenCalledWith("Request marked as IN PROGRESS.");
+  });
+
+  test("Clicking Deny sends PUT with DENIED and toasts success", async () => {
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByTestId(
+        "RecommendationRequestTable-cell-row-2-col-Update-dropdown",
+      ),
+    );
+    fireEvent.click(await screen.findByText("Deny"));
+
+    await waitFor(() => expect(axiosMock.history.put.length).toBe(1));
+
+    expect(toast).toHaveBeenCalledWith("Request marked as DENIED.");
+  });
+
+  test("Clicking Complete sends PUT with Completed and toasts success", async () => {
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByTestId(
+        "RecommendationRequestTable-cell-row-3-col-Update-dropdown",
+      ),
+    );
+    fireEvent.click(await screen.findByText("Complete"));
+
+    await waitFor(() => expect(axiosMock.history.put.length).toBe(1));
+
+    expect(toast).toHaveBeenCalledWith("Request marked as COMPLETED.");
+  });
+
+  test("Update button not render for a non-professor even on the pending page", async () => {
+    const currentUser = currentUserFixtures.userOnly;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(
+      screen.queryByTestId(
+        "RecommendationRequestTable-cell-row-0-col-Update-dropdown",
+      ),
+    ).toBeNull();
+  });
+
+  test("Update button not render for a professor on a non-pending page", async () => {
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/completed"]}>
+          <Routes>
+            <Route
+              path="/requests/completed"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    expect(
+      screen.queryByTestId(
+        "RecommendationRequestTable-cell-row-0-col-Update-dropdown",
+      ),
+    ).toBeNull();
+  });
+
+  test("Passes the correct status into the Accept callback", async () => {
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByTestId(
+        "RecommendationRequestTable-cell-row-2-col-Update-dropdown",
+      ),
+    );
+
+    fireEvent.click(await screen.findByText("Accept"));
+    await waitFor(() => expect(axiosMock.history.put.length).toBe(1));
+    expect(axiosMock.history.put[0].data).toBe(
+      JSON.stringify({ status: "IN PROGRESS" }),
+    );
+  });
+
+  test("Passes the correct status into the Deny callback", async () => {
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByTestId(
+        "RecommendationRequestTable-cell-row-2-col-Update-dropdown",
+      ),
+    );
+
+    fireEvent.click(await screen.findByText("Deny"));
+    await waitFor(() => expect(axiosMock.history.put.length).toBe(1));
+    expect(axiosMock.history.put[0].data).toBe(
+      JSON.stringify({ status: "DENIED" }),
+    );
+  });
+
+  test("Passes the correct status into the Complete callback", async () => {
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByTestId(
+        "RecommendationRequestTable-cell-row-3-col-Update-dropdown",
+      ),
+    );
+
+    fireEvent.click(await screen.findByText("Complete"));
+    await waitFor(() => expect(axiosMock.history.put.length).toBe(1));
+    expect(axiosMock.history.put[0].data).toBe(
+      JSON.stringify({ status: "COMPLETED" }),
+    );
+  });
+
+  test("On success it invalidates the correct apiEndpoint", async () => {
+    const apiEndpoint = "/api/recommendationrequest/professor/all";
+    const queryClient = new QueryClient();
+    const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
+
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByTestId(
+        "RecommendationRequestTable-cell-row-2-col-Update-dropdown",
+      ),
+    );
+    fireEvent.click(await screen.findByText("Accept"));
+
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith("Request marked as IN PROGRESS."),
+    );
+
+    expect(invalidateSpy).toHaveBeenCalledWith([apiEndpoint]);
+  });
+
+  test("Fires onUpdateStatusSuccess when Accept completes", async () => {
+    const successSpy = jest.spyOn(
+      require("main/utils/RecommendationRequestUtils"),
+      "onUpdateStatusSuccess",
+    );
+
+    const currentUser = currentUserFixtures.professorUser;
+    const rows = recommendationRequestFixtures.mixedRequests;
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <Routes>
+            <Route
+              path="/requests/pending"
+              element={
+                <RecommendationRequestTable
+                  requests={rows}
+                  currentUser={currentUser}
+                />
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    fireEvent.click(
+      await screen.findByTestId(
+        "RecommendationRequestTable-cell-row-2-col-Update-dropdown",
+      ),
+    );
+    fireEvent.click(await screen.findByText("Accept"));
+
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith("Request marked as IN PROGRESS."),
+    );
+
+    expect(successSpy).toHaveBeenCalledWith("Request marked as IN PROGRESS.");
+    expect(successSpy).toHaveBeenCalledTimes(2);
   });
 });

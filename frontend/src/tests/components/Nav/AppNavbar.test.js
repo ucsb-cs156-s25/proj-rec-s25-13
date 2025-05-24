@@ -189,7 +189,7 @@ describe("AppNavbar tests", () => {
     expect(statisticsLink).toBeInTheDocument();
   });
 
-  test("renders the three prof pages correctly for normal users", async () => {
+  test("the three prof pages can not be seen by basic users", async () => {
     const currentUser = currentUserFixtures.userOnly;
     const systemInfo = systemInfoFixtures.showingBoth;
     const doLogin = jest.fn();
@@ -206,17 +206,9 @@ describe("AppNavbar tests", () => {
       </QueryClientProvider>,
     );
 
-    await screen.findByText("Pending Requests");
-    const pendingLink = screen.getByText("Pending Requests");
-    expect(pendingLink).toBeInTheDocument();
-
-    await screen.findByText("Completed Requests");
-    const completedLink = screen.getByText("Completed Requests");
-    expect(completedLink).toBeInTheDocument();
-
-    await screen.findByText("Statistics");
-    const statisticsLink = screen.getByText("Statistics");
-    expect(statisticsLink).toBeInTheDocument();
+    expect(screen.queryByText("Pending Requests")).not.toBeInTheDocument();
+    expect(screen.queryByText("Completed Requests")).not.toBeInTheDocument();
+    expect(screen.queryByText("Statistics")).not.toBeInTheDocument();
   });
 
   test("the three prof pages do not show when not logged in", async () => {

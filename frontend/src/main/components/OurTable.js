@@ -1,5 +1,5 @@
 import { useTable, useSortBy } from "react-table";
-import { Table, Button } from "react-bootstrap";
+import { Table, Button, Dropdown } from "react-bootstrap";
 
 export default function OurTable({ columns, data, testid = "testid" }) {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -100,6 +100,43 @@ export function ButtonColumn(label, variant, callback, testid) {
       >
         {label}
       </Button>
+    ),
+  };
+  return column;
+}
+
+export function ButtonDropdownColumn(label, variant, callback, testid) {
+  const column = {
+    Header: label,
+    id: label,
+    Cell: ({ cell }) => (
+      <Dropdown className="dropdown-cell-wrapper">
+        <Dropdown.Toggle
+          variant={variant}
+          data-testid={`${testid}-cell-row-${cell.row.index}-col-${cell.column.id}-dropdown`}
+        >
+          Update
+        </Dropdown.Toggle>
+
+        <Dropdown.Menu>
+          {cell.row.original.status === "PENDING" && (
+            <>
+              <Dropdown.Item onClick={() => callback.Accept(cell)}>
+                Accept
+              </Dropdown.Item>
+              <Dropdown.Item onClick={() => callback.Deny(cell)}>
+                Deny
+              </Dropdown.Item>
+            </>
+          )}
+
+          {cell.row.original.status === "IN PROGRESS" && (
+            <Dropdown.Item onClick={() => callback.Complete(cell)}>
+              Complete
+            </Dropdown.Item>
+          )}
+        </Dropdown.Menu>
+      </Dropdown>
     ),
   };
   return column;
