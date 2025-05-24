@@ -10,11 +10,112 @@ import { hasRole } from "main/utils/currentUser";
 import { toast } from "react-toastify";
 
 const mockedNavigate = jest.fn();
+const mockedLocation = { pathname: "" };
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
+jest.mock("react-router-dom", () => {
+  const actual = jest.requireActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockedNavigate,
+    useLocation: () => mockedLocation,
+  };
+});
+
+describe("RecommendationRequestTable apiEndpoint invalidation", () => {
+  let queryClient;
+  let invalidateSpy;
+  const axiosMock = new AxiosMockAdapter(axios);
+
+  beforeEach(() => {
+    queryClient = new QueryClient();
+    invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
+
+    axiosMock.onDelete().reply(200, { message: "deleted" });
+  });
+
+  afterEach(() => {
+    axiosMock.resetHistory();
+    jest.clearAllMocks();
+  });
+
+  test("invalidates '/api/recommendationrequest/requester/all' on a non-pending/non-completed page", async () => {
+    mockedLocation.pathname = "/profile";
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/profile"]}>
+          <RecommendationRequestTable
+            requests={recommendationRequestFixtures.threeRecommendations}
+            currentUser={currentUserFixtures.userOnly}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId("RecommendationRequestTable-cell-row-0-col-id"),
+      ).toHaveTextContent("2"),
+    );
+
+    fireEvent.click(
+      screen.getByTestId(
+        "RecommendationRequestTable-cell-row-0-col-Delete-button",
+      ),
+    );
+
+    await waitFor(() =>
+      expect(axiosMock.history.delete[0].url).toEqual(
+        "/api/recommendationrequest",
+      ),
+    );
+
+    await waitFor(() =>
+      expect(invalidateSpy).toHaveBeenCalledWith(
+        "/api/recommendationrequest/requester/all",
+      ),
+    );
+  });
+
+  test("invalidates '/api/recommendationrequest/professor/all' on a pending page", async () => {
+    mockedLocation.pathname = "/requests/pending";
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <RecommendationRequestTable
+            requests={recommendationRequestFixtures.threeRecommendations}
+            currentUser={currentUserFixtures.professorUser}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    await waitFor(() =>
+      expect(
+        screen.getByTestId("RecommendationRequestTable-cell-row-0-col-id"),
+      ).toHaveTextContent("2"),
+    );
+
+    fireEvent.click(
+      screen.getByTestId(
+        "RecommendationRequestTable-cell-row-0-col-Delete-button",
+      ),
+    );
+
+    await waitFor(() =>
+      expect(axiosMock.history.delete[0].url).toEqual(
+        "/api/recommendationrequest/professor",
+      ),
+    );
+
+    await waitFor(() =>
+      expect(invalidateSpy).toHaveBeenCalledWith(
+        "/api/recommendationrequest/professor/all",
+      ),
+    );
+  });
+});
 
 describe("UserTable tests", () => {
   const queryClient = new QueryClient();
@@ -258,7 +359,7 @@ describe("UserTable tests", () => {
   });
 
   //for user
-  test("Delete button calls delete callback (for user)", async () => {
+  test("Delete button calls delete callback (for requester)", async () => {
     // arrange
     const currentUser = currentUserFixtures.userOnly;
 
@@ -270,7 +371,7 @@ describe("UserTable tests", () => {
     // act - render the component
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={["/profile"]}>
           <RecommendationRequestTable
             requests={recommendationRequestFixtures.threeRecommendations}
             currentUser={currentUser}
@@ -296,8 +397,10 @@ describe("UserTable tests", () => {
     fireEvent.click(deleteButton);
 
     // assert - check that the delete endpoint was called
-
     await waitFor(() => expect(axiosMock.history.delete.length).toBe(1));
+    expect(axiosMock.history.delete[0].url).toEqual(
+      "/api/recommendationrequest",
+    );
     expect(axiosMock.history.delete[0].params).toEqual({ id: 2 });
   });
 
@@ -314,7 +417,7 @@ describe("UserTable tests", () => {
     // act - render the component
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={["/requests/completed"]}>
           <RecommendationRequestTable
             requests={recommendationRequestFixtures.threeRecommendations}
             currentUser={currentUser}
@@ -342,6 +445,56 @@ describe("UserTable tests", () => {
     // assert - check that the delete endpoint was called
 
     await waitFor(() => expect(axiosMock.history.delete.length).toBe(1));
+    expect(axiosMock.history.delete[0].url).toEqual(
+      "/api/recommendationrequest/admin",
+    );
+    expect(axiosMock.history.delete[0].params).toEqual({ id: 2 });
+  });
+
+  //for professor
+  test("Delete button calls delete callback (professor)", async () => {
+    // arrange
+    const currentUser = currentUserFixtures.professorUser;
+
+    const axiosMock = new AxiosMockAdapter(axios);
+    axiosMock
+      .onDelete("/api/recommendationrequest")
+      .reply(200, { message: "Recommendation Request deleted" });
+
+    // act - render the component
+    render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/requests/pending"]}>
+          <RecommendationRequestTable
+            requests={recommendationRequestFixtures.threeRecommendations}
+            currentUser={currentUser}
+          />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+
+    // assert - check that the expected content is rendered
+
+    await waitFor(() => {
+      expect(
+        screen.getByTestId(`RecommendationRequestTable-cell-row-0-col-id`),
+      ).toHaveTextContent("2");
+    });
+
+    const deleteButton = screen.getByTestId(
+      `RecommendationRequestTable-cell-row-0-col-Delete-button`,
+    );
+    expect(deleteButton).toBeInTheDocument();
+
+    // act - click the delete button
+    fireEvent.click(deleteButton);
+
+    // assert - check that the delete endpoint was called
+
+    await waitFor(() => expect(axiosMock.history.delete.length).toBe(1));
+    expect(axiosMock.history.delete[0].url).toEqual(
+      "/api/recommendationrequest/professor",
+    );
     expect(axiosMock.history.delete[0].params).toEqual({ id: 2 });
   });
 });

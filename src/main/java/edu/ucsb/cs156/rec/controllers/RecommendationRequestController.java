@@ -86,6 +86,28 @@ public class RecommendationRequestController extends ApiController {
     }
 
     /**
+     * The professor can delete incoming RecommendationRequests
+     * 
+     * @param id the id of the RecommendationRequest to delete
+     * @return a message indicating that the RecommendationRequest was deleted
+     */
+    @Operation(summary = "Professor can delete their incoming RecommendationRequest")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @DeleteMapping("/professor")
+    public Object deleteRecommendationRequestAsProfessor(@Parameter(name = "id") @RequestParam Long id) {
+        User currentUser = getCurrentUser().getUser(); 
+        RecommendationRequest recommendationRequest = 
+        recommendationRequestRepository
+            .findByIdAndProfessor(id, currentUser)
+            .orElseThrow(() -> new EntityNotFoundException(RecommendationRequest.class, id));
+
+        recommendationRequestRepository.delete(recommendationRequest);
+
+        return genericMessage("RecommendationRequest with id %s deleted".formatted(id));
+    }
+
+
+    /**
      * The user who posted a RecommendationRequest can update their RecommendationRequest
      * 
      * @param id       the id of the Recommendation Request to update

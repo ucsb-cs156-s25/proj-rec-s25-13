@@ -5,9 +5,14 @@ import {
   _cellToAxiosParamsUpdateStatus,
   cellToAxiosParamsUpdateStatus,
 } from "main/utils/RecommendationRequestUtils";
+import { currentUserFixtures } from "fixtures/currentUserFixtures";
+import { hasRole } from "main/utils/currentUser";
 import mockConsole from "jest-mock-console";
 
 const mockToast = jest.fn();
+jest.mock("main/utils/currentUser", () => ({
+  hasRole: jest.fn(),
+}));
 jest.mock("react-toastify", () => {
   const originalModule = jest.requireActual("react-toastify");
   return {
@@ -35,19 +40,72 @@ describe("RecommendationRequestUtils", () => {
     });
   });
   describe("cellToAxiosParamsDelete", () => {
-    test("It returns the correct params", () => {
-      // arrange
-      const cell = { row: { values: { id: 17 } } };
+    const cell = {
+      row: {
+        original: {
+          id: 17,
+          requester: { id: 2 },
+          professor: { id: 3 },
+        },
+      },
+    };
 
-      // act
-      const result = cellToAxiosParamsDelete(cell);
+    afterEach(() => {
+      jest.resetAllMocks();
+    });
 
-      // assert
+    test("Admins get the /admin delete", () => {
+      hasRole.mockReturnValueOnce(true);
+
+      const currentUser = currentUserFixtures.adminUser;
+
+      const result = cellToAxiosParamsDelete(cell, currentUser);
+
+      expect(hasRole).toHaveBeenCalledWith(currentUser, "ROLE_ADMIN");
+
+      expect(result).toEqual({
+        url: "/api/recommendationrequest/admin",
+        method: "DELETE",
+        params: { id: 17 },
+      });
+    });
+
+    test("Requesters get regular URL delete", () => {
+      hasRole.mockReturnValueOnce(false);
+
+      const currentUser = currentUserFixtures.userOnly;
+
+      const result = cellToAxiosParamsDelete(cell, currentUser);
+
       expect(result).toEqual({
         url: "/api/recommendationrequest",
         method: "DELETE",
         params: { id: 17 },
       });
+    });
+
+    test("Professors get /professor delete", () => {
+      hasRole.mockReturnValueOnce(false);
+
+      const currentUser = currentUserFixtures.professorUser;
+
+      const result = cellToAxiosParamsDelete(cell, currentUser);
+
+      expect(result).toEqual({
+        url: "/api/recommendationrequest/professor",
+        method: "DELETE",
+        params: { id: 17 },
+      });
+    });
+
+    test("Others get authorization error", () => {
+      hasRole.mockReturnValueOnce(false);
+
+      const currentUser = currentUserFixtures.adminUser;
+
+      expect(() => cellToAxiosParamsDelete(cell, currentUser)).toThrow(
+        "Not authorized to delete this request",
+      );
     });
   });
   describe("onUpdateStatusSuccess", () => {

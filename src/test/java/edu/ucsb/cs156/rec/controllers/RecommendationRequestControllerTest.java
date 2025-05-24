@@ -259,6 +259,99 @@ public class RecommendationRequestControllerTest extends ControllerTestCase {
                 assertEquals("RecommendationRequest with id 19 not found", json.get("message"));
         }
 
+        // Professor can delete incoming recommendation request
+        @WithMockUser(roles = { "PROFESSOR" })
+        @Test
+        public void professor_can_delete_their_recommendation_request() throws Exception {
+
+                User user = currentUserService.getCurrentUser().getUser();
+                User requester = User.builder()
+                                .id(22L)
+                                .email("studentA@ucsb.edu")
+                                .googleSub("googleSub")
+                                .fullName("Student A")
+                                .givenName("Student")
+                                .familyName("A")
+                                .emailVerified(true)
+                                .build();
+
+                // arrange
+                RecommendationRequest recReq = RecommendationRequest.builder()
+                                .id(15L)
+                                .requester(requester)
+                                .professor(user)
+                                .recommendationType("PhDprogram")
+                                .details("details")
+                                .status("PENDING")
+                                .completionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .dueDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .submissionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .lastModifiedDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .build();
+
+                when(recommendationRequestRepository.findByIdAndProfessor(eq(15L), eq(user)))
+                                .thenReturn(Optional.of(recReq));
+
+                // act
+                MvcResult response = mockMvc.perform(
+                                delete("/api/recommendationrequest/professor?id=15")
+                                                .with(csrf()))
+                                .andExpect(status().isOk()).andReturn();
+
+                // assert
+                verify(recommendationRequestRepository, times(1)).findByIdAndProfessor(15L, user);
+                verify(recommendationRequestRepository, times(1)).delete(recReq);
+
+                Map<String, Object> json = responseToJson(response);
+                assertEquals("RecommendationRequest with id 15 deleted", json.get("message"));
+        }
+
+        // Professor attempts to delete a recommendation request that dne
+        @WithMockUser(roles = { "PROFESSOR" })
+        @Test
+        public void professor_tries_to_delete_non_existant_recommendation_request_and_gets_right_error_message()
+                        throws Exception {
+                // arrange
+                User user1 = currentUserService.getCurrentUser().getUser();
+                User user2 = User.builder().id(44).build();
+                User requester = User.builder()
+                                .id(22L)
+                                .email("studentA@ucsb.edu")
+                                .googleSub("googleSub")
+                                .fullName("Student A")
+                                .givenName("Student")
+                                .familyName("A")
+                                .emailVerified(true)
+                                .build();
+
+                RecommendationRequest rec1 = RecommendationRequest.builder()
+                                .id(15L)
+                                .requester(requester)
+                                .professor(user1)
+                                .recommendationType("PhDprogram")
+                                .details("details")
+                                .status("PENDING")
+                                .completionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .dueDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .submissionDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .lastModifiedDate(LocalDateTime.parse("2022-01-03T00:00:00"))
+                                .build();
+
+                when(recommendationRequestRepository.findByIdAndProfessor(eq(15L), eq(user2)))
+                                .thenReturn(Optional.of(rec1));
+
+                // act
+                MvcResult response = mockMvc.perform(
+                                delete("/api/recommendationrequest/professor?id=15")
+                                                .with(csrf()))
+                                .andExpect(status().isNotFound()).andReturn();
+
+                // assert
+                verify(recommendationRequestRepository, times(1)).findByIdAndProfessor(15L, user1);
+                Map<String, Object> json = responseToJson(response);
+                assertEquals("RecommendationRequest with id 15 not found", json.get("message"));
+        }
+
         // User can update their recommendation request
         @WithMockUser(roles = { "USER" })
         @Test
