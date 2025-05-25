@@ -110,29 +110,21 @@ import edu.ucsb.cs156.rec.errors.EntityNotFoundException;
 <span class="fc" id="L110">        User user = userRepository.findById(id)</span>
 <span class="fc" id="L111">        .orElseThrow(() -&gt; new EntityNotFoundException(User.class, id));</span>
 
-        // Get the current user
-<span class="fc" id="L114">        User currentUser = getCurrentUser().getUser();</span>
-        
-        // Check if the user is trying to remove admin from themselves
-<span class="pc bpc" id="L117" title="1 of 4 branches missed.">        if (user.getId() == currentUser.getId() &amp;&amp; user.getAdmin()) {</span>
-<span class="fc" id="L118">            throw new IllegalArgumentException(&quot;Cannot remove admin from currently logged in user; ask another admin to do that.&quot;);</span>
-        }
-
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        user.setAdmin(!user.getAdmin());</span>
-<span class="fc" id="L122">        userRepository.save(user);</span>
-<span class="fc" id="L123">        return genericMessage(&quot;User with id %s has toggled admin status to %s&quot;.formatted(id, user.getAdmin()));</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        user.setAdmin(!user.getAdmin());</span>
+<span class="fc" id="L114">        userRepository.save(user);</span>
+<span class="fc" id="L115">        return genericMessage(&quot;User with id %s has toggled admin status to %s&quot;.formatted(id, user.getAdmin()));</span>
     }
 
     @Operation(summary = &quot;Toggle the professor field&quot;)
     @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
     @PostMapping(&quot;/toggleProfessor&quot;)
     public Object toggleProfessor( @Parameter(name = &quot;id&quot;, description = &quot;Long, id number of user to toggle their professor field&quot;, example = &quot;1&quot;, required = true) @RequestParam Long id){
-<span class="fc" id="L130">        User user = userRepository.findById(id)</span>
-<span class="fc" id="L131">        .orElseThrow(() -&gt; new EntityNotFoundException(User.class, id));</span>
+<span class="fc" id="L122">        User user = userRepository.findById(id)</span>
+<span class="fc" id="L123">        .orElseThrow(() -&gt; new EntityNotFoundException(User.class, id));</span>
 
-<span class="fc bfc" id="L133" title="All 2 branches covered.">        user.setProfessor(!user.getProfessor());</span>
-<span class="fc" id="L134">        userRepository.save(user);</span>
-<span class="fc" id="L135">        return genericMessage(&quot;User with id %s has toggled professor status to %s&quot;.formatted(id, user.getProfessor()));</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        user.setProfessor(!user.getProfessor());</span>
+<span class="fc" id="L126">        userRepository.save(user);</span>
+<span class="fc" id="L127">        return genericMessage(&quot;User with id %s has toggled professor status to %s&quot;.formatted(id, user.getProfessor()));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
