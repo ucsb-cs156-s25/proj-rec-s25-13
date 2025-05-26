@@ -75,7 +75,7 @@ import jakarta.validation.Valid;
      * @return the saved requesttype
      */
     @Operation(summary= &quot;Create a new request type&quot;)
-    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')&quot;)
     @PostMapping(&quot;/post&quot;)
     public RequestType postRequestType(
             @Parameter(name=&quot;requestType&quot;) @RequestParam String requestType)
@@ -107,7 +107,7 @@ import jakarta.validation.Valid;
      * @return a message indicating the date was deleted
      */
     @Operation(summary= &quot;Delete a request type&quot;)
-    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')&quot;)
     @DeleteMapping(&quot;&quot;)
     public Object deleteRequestType(
             @Parameter(name=&quot;id&quot;) @RequestParam Long id) {
@@ -126,7 +126,7 @@ import jakarta.validation.Valid;
      * @return the updated request type object
      */
     @Operation(summary= &quot;Update a single request type&quot;)
-    @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+    @PreAuthorize(&quot;hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')&quot;)
     @PutMapping(&quot;&quot;)
     public RequestType updateRequestType(
             @Parameter(name=&quot;id&quot;) @RequestParam Long id,
@@ -142,16 +142,19 @@ import jakarta.validation.Valid;
 <span class="fc bfc" id="L142" title="All 2 branches covered.">            if (incoming.getRequestType().isEmpty()){</span>
 <span class="fc" id="L143">                throw new IllegalArgumentException(&quot;Request type cannot be empty&quot;);</span>
             }
-<span class="fc bfc" id="L145" title="All 2 branches covered.">            if (existing.getRequestType().equals(incoming.getRequestType())) {</span>
-<span class="fc" id="L146">                throw new IllegalArgumentException(&quot;Duplicate request type: &quot; + incoming);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">            if(existing.getId() == id){</span>
+<span class="fc" id="L146">                continue;</span>
             }
-<span class="fc" id="L148">        }</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">            if (existing.getRequestType().equals(incoming.getRequestType())) {</span>
+<span class="fc" id="L149">                throw new IllegalArgumentException(&quot;Duplicate request type: &quot; + incoming);</span>
+            }
+<span class="fc" id="L151">        }</span>
 
         // Update and save the request type
-<span class="fc" id="L151">        requestType.setRequestType(incoming.getRequestType());</span>
-<span class="fc" id="L152">        requestTypeRepository.save(requestType);</span>
+<span class="fc" id="L154">        requestType.setRequestType(incoming.getRequestType());</span>
+<span class="fc" id="L155">        requestTypeRepository.save(requestType);</span>
 
-<span class="fc" id="L154">        return requestType;</span>
+<span class="fc" id="L157">        return requestType;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
